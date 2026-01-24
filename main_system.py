@@ -12,6 +12,8 @@ SERIAL_PORT = 'COM3'  # Sửa đúng cổng COM của bạn
 ESP32_URL = "http://192.168.4.1/face_toggle"
 FACE_DATA_DIR = "images"
 XML_PATH = "haarcascade_frontalface_default.xml"
+CONFIDENCE_THRESHOLD = 75 # NGƯỠNG TIN CẬY: Càng thấp càng chắc chắn. Mặc định: 75
+
 
 if not os.path.exists(FACE_DATA_DIR): os.makedirs(FACE_DATA_DIR)
 
@@ -94,7 +96,7 @@ def run_recognition():
         faces = detector.detectMultiScale(gray, 1.3, 5)
         for (x,y,w,h) in faces:
             id_, conf = recognizer.predict(gray[y:y+h, x:x+w])
-            if conf <= 75:
+            if conf <= CONFIDENCE_THRESHOLD:
                 print(f"Mở cửa cho: {labels[id_]}")
                 try: requests.post(ESP32_URL, timeout=1)
                 except: pass

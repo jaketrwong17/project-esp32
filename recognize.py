@@ -7,6 +7,8 @@ import time
 ESP32_IP = "192.168.4.1" # IP mặc định khi ESP32 phát WiFi
 ESP32_URL = f"http://{ESP32_IP}/face_toggle"
 COOLDOWN_TIME = 5 # 5 giây sau mỗi lần mở mới nhận diện tiếp
+CONFIDENCE_THRESHOLD = 80 # NGƯỠNG TIN CẬY: Càng thấp càng chắc chắn. Mặc định: 80
+
 
 def face_recognition():
     # Load các file dữ liệu
@@ -36,7 +38,7 @@ def face_recognition():
             id_, conf = recognizer.predict(roi_gray)
 
             # Độ tin cậy (conf) càng thấp càng chính xác, thường < 80 là ổn
-            if conf <= 80:
+            if conf <= CONFIDENCE_THRESHOLD:
                 name = labels[id_]
                 color = (0, 255, 0) # Xanh lá nếu đúng
                 
