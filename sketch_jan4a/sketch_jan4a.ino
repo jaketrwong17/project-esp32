@@ -31,7 +31,7 @@ Keypad keypad = Keypad(makeKeymap(keys), rowPins, colPins, ROWS, COLS);
 // KHỞI TẠO ĐỐI TƯỢNG
 Servo servo;
 AsyncWebServer server(80);
-AsyncWebSocket ws("/ws");
+AsyncWebSocket ws("/ws"); 
 Preferences preferences;
 LiquidCrystal_I2C lcd(0x27, 16, 2);
 MFRC522 rfid(SS_PIN, RST_PIN);
@@ -269,7 +269,20 @@ void loop() {
   // Xử lý lệnh từ Serial (Python gửi tên khuôn mặt đã lưu)
   if (Serial.available() > 0) { 
     String in = Serial.readStringUntil('\n'); 
-    if (in.startsWith("LIST:")) { faceNames = in.substring(5); sendData(); } 
+    in.trim(); // Cắt bỏ khoảng trắng thừa (Rất quan trọng)
+
+    // 1. Lệnh cập nhật danh sách tên (như cũ)
+    if (in.startsWith("LIST:")) { 
+        faceNames = in.substring(5); 
+        sendData(); 
+    } 
+    
+    // 2. LỆNH MỞ CỬA TỪ FACE ID (Cái bạn đang thiếu)
+    else if (in == "OPEN_DOOR") {
+        Serial.println("ESP32: DA MO KHOA BANG FACE ID"); 
+        doorLocked = false;             // Mở chốt
+        controlDoor(doorLocked, "FACE ID"); // Kích hoạt Servo + Timer 20s
+    }
   }
 }
 
